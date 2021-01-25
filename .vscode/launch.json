@@ -2,14 +2,21 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Launch",
+      "name": "Debug (API)",
       "type": "go",
       "request": "launch",
       "mode": "auto",
-      "program": "${workspaceFolder}",
-      "env": {
-        "ENVIRONMENT": "Development",
-      },
+      "program": "${workspaceFolder}/cmd/api",
+      "env": {},
+      "args": []
+    },
+    {
+      "name": "Debug (Consumer)",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "program": "${workspaceFolder}/cmd/consumer",
+      "env": {},
       "args": []
     }
   ]
