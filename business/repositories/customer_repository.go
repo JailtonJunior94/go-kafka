@@ -8,7 +8,7 @@ import (
 )
 
 type ICustomerReposity interface {
-	Get() (customers []*entities.Customer, err error)
+	Get() (customers []entities.Customer, err error)
 	GetById(id int64) (customer *entities.Customer, err error)
 	Add(c *entities.Customer) (customer *entities.Customer, err error)
 	Update(c *entities.Customer) (customer *entities.Customer, err error)
@@ -23,7 +23,7 @@ func NewCustomerRepository(db *sqlx.DB) ICustomerReposity {
 	return &CustomerRepository{Db: db}
 }
 
-func (r *CustomerRepository) Get() (customers []*entities.Customer, err error) {
+func (r CustomerRepository) Get() (customers []entities.Customer, err error) {
 	query := `SELECT
 				Id,
 				Name,
@@ -37,17 +37,16 @@ func (r *CustomerRepository) Get() (customers []*entities.Customer, err error) {
 	if err := r.Db.Select(&customers, query); err != nil {
 		return nil, err
 	}
-	defer r.Db.Close()
 
 	return customers, nil
 }
 
-func (r *CustomerRepository) GetById(id int64) (customer *entities.Customer, err error) {
+func (r CustomerRepository) GetById(id int64) (customer *entities.Customer, err error) {
 
 	return nil, nil
 }
 
-func (r *CustomerRepository) Add(c *entities.Customer) (customer *entities.Customer, err error) {
+func (r CustomerRepository) Add(c *entities.Customer) (customer *entities.Customer, err error) {
 	query := `INSERT INTO
 				dbo.Customers
 			VALUES
@@ -78,12 +77,12 @@ func (r *CustomerRepository) Add(c *entities.Customer) (customer *entities.Custo
 	}, nil
 }
 
-func (r *CustomerRepository) Update(c *entities.Customer) (customer *entities.Customer, err error) {
+func (r CustomerRepository) Update(c *entities.Customer) (customer *entities.Customer, err error) {
 
 	return nil, nil
 }
 
-func (r *CustomerRepository) Delete(id int64) error {
+func (r CustomerRepository) Delete(id int64) error {
 
 	return nil
 }

@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"github/jailtonjunior94/go-kafka/business/dtos"
+	"github/jailtonjunior94/go-kafka/business/mappings"
 	"github/jailtonjunior94/go-kafka/business/repositories"
 
 	"github.com/gofiber/fiber/v2"
@@ -28,7 +30,8 @@ func (h CustomerHandler) GetCustomers(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
 	}
 
-	return c.Status(fiber.StatusOK).JSON(customers)
+	response := mappings.ToListResponse(customers)
+	return c.Status(fiber.StatusOK).JSON(response)
 }
 
 func (h CustomerHandler) GetCustomerById(c *fiber.Ctx) error {
@@ -37,8 +40,23 @@ func (h CustomerHandler) GetCustomerById(c *fiber.Ctx) error {
 }
 
 func (h CustomerHandler) CreateCustomer(c *fiber.Ctx) error {
-	message := "Create Customer"
-	return c.Status(fiber.StatusCreated).JSON(fiber.Map{"message": message})
+	request := new(dtos.CustomerRequest)
+	if err := c.BodyParser(request); err != nil {
+		return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{"message": "Unprocessable Entity"})
+	}
+
+	if err := request.IsValid(); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	customer := mappings.ToEntity(*request)
+	result, err := h.CustomerRepository.Add(&customer)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	response := mappings.ToResponse(*result)
+	return c.Status(fiber.StatusCreated).JSON(response)
 }
 
 func (h CustomerHandler) UpdateCustomer(c *fiber.Ctx) error {
