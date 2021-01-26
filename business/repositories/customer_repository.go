@@ -42,8 +42,28 @@ func (r CustomerRepository) Get() (customers []entities.Customer, err error) {
 }
 
 func (r CustomerRepository) GetById(id int64) (customer *entities.Customer, err error) {
+	query := `SELECT
+				Id,
+				Name,
+				Email,
+				CreatedAt,
+				UpdatedAt,
+				Active
+			FROM
+				dbo.Customers (NOLOCK)
+			WHERE
+				Id = @id`
 
-	return nil, nil
+	var customers []entities.Customer
+	if err := r.Db.Select(&customers, query, sql.Named("id", id)); err != nil {
+		return nil, err
+	}
+
+	if len(customers) == 0 {
+		return nil, nil
+	}
+
+	return &customers[0], nil
 }
 
 func (r CustomerRepository) Add(c *entities.Customer) (customer *entities.Customer, err error) {
@@ -78,11 +98,59 @@ func (r CustomerRepository) Add(c *entities.Customer) (customer *entities.Custom
 }
 
 func (r CustomerRepository) Update(c *entities.Customer) (customer *entities.Customer, err error) {
+	query := `UPDATE
+				dbo.Customers
+			SET
+				Name = @name,
+				Email = @email,
+				UpdatedAt = @updatedAt
+			WHERE
+				Id = @id`
 
-	return nil, nil
+	s, err := r.Db.Prepare(query)
+	if err != nil {
+		return nil, err
+	}
+	defer s.Close()
+
+	result, err := s.Exec(sql.Named("name", c.Name),
+		sql.Named("email", c.Email),
+		sql.Named("updatedAt", c.UpdatedAt.Time),
+		sql.Named("id", c.ID))
+
+	if err != nil {
+		return nil, err
+	}
+
+	rows, err := result.RowsAffected()
+	if rows == 0 {
+		return nil, err
+	}
+
+	return c, nil
 }
 
 func (r CustomerRepository) Delete(id int64) error {
+	query := `DELETE FROM
+				dbo.Customers
+			WHERE
+				Id = @id`
+
+	s, err := r.Db.Prepare(query)
+	if err != nil {
+		return err
+	}
+	defer s.Close()
+
+	result, err := s.Exec(sql.Named("id", id))
+	if err != nil {
+		return err
+	}
+
+	rows, err := result.RowsAffected()
+	if rows == 0 {
+		return err
+	}
 
 	return nil
 }

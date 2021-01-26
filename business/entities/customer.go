@@ -13,3 +13,9 @@ type Customer struct {
 	UpdatedAt sql.NullTime `db:"UpdatedAt"`
 	Active    bool         `db:"Active"`
 }
+
+func (c *Customer) Update(name, email string) {
+	c.Name = name
+	c.Email = email
+	c.UpdatedAt.Time = time.Now()
+}
