@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"database/sql"
 	"github/jailtonjunior94/go-kafka/business/entities"
 
 	"github.com/jmoiron/sqlx"
@@ -23,8 +24,22 @@ func NewCustomerRepository(db *sqlx.DB) ICustomerReposity {
 }
 
 func (r *CustomerRepository) Get() (customers []*entities.Customer, err error) {
+	query := `SELECT
+				Id,
+				Name,
+				Email,
+				CreatedAt,
+				UpdatedAt,
+				Active
+			FROM
+				dbo.Customers (NOLOCK)`
 
-	return nil, nil
+	if err := r.Db.Select(&customers, query); err != nil {
+		return nil, err
+	}
+	defer r.Db.Close()
+
+	return customers, nil
 }
 
 func (r *CustomerRepository) GetById(id int64) (customer *entities.Customer, err error) {
@@ -33,8 +48,34 @@ func (r *CustomerRepository) GetById(id int64) (customer *entities.Customer, err
 }
 
 func (r *CustomerRepository) Add(c *entities.Customer) (customer *entities.Customer, err error) {
+	query := `INSERT INTO
+				dbo.Customers
+			VALUES
+				(@name, @email, @createdAt, @updatedAt, @active); SELECT SCOPE_IDENTITY()`
 
-	return nil, nil
+	s, err := r.Db.Prepare(query)
+	if err != nil {
+		return nil, err
+	}
+	defer s.Close()
+
+	lastInsertId := 0
+	if err = s.QueryRow(sql.Named("name", c.Name),
+		sql.Named("email", c.Email),
+		sql.Named("createdAt", c.CreatedAt),
+		sql.Named("updatedAt", c.UpdatedAt),
+		sql.Named("active", c.Active)).Scan(&lastInsertId); err != nil {
+		return nil, err
+	}
+
+	return &entities.Customer{
+		ID:        int64(lastInsertId),
+		Name:      c.Name,
+		Email:     c.Email,
+		CreatedAt: c.CreatedAt,
+		UpdatedAt: c.UpdatedAt,
+		Active:    c.Active,
+	}, nil
 }
 
 func (r *CustomerRepository) Update(c *entities.Customer) (customer *entities.Customer, err error) {

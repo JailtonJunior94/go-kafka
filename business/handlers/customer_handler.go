@@ -23,8 +23,12 @@ func NewCustomerHandler(repository repositories.ICustomerReposity) ICustomerHand
 }
 
 func (h CustomerHandler) GetCustomers(c *fiber.Ctx) error {
-	message := "Get Customers"
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": message})
+	customers, err := h.CustomerRepository.Get()
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(customers)
 }
 
 func (h CustomerHandler) GetCustomerById(c *fiber.Ctx) error {
