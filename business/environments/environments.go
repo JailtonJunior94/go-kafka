@@ -3,6 +3,7 @@ package environments
 import (
 	"log"
 	"os"
+	"strconv"
 
 	"github.com/joho/godotenv"
 )
@@ -13,6 +14,7 @@ var (
 	BootstrapServer  = ""
 	GroupId          = ""
 	Topic            = ""
+	Port             = 0
 )
 
 func NewConfig() {
@@ -27,4 +29,8 @@ func NewConfig() {
 	BootstrapServer = os.Getenv("BOOTSTRAP_SERVER")
 	GroupId = os.Getenv("GROUP_ID")
 	Topic = os.Getenv("TOPIC")
+	Port, err = strconv.Atoi(os.Getenv("API_PORT"))
+	if err != nil {
+		Port = 9000
+	}
 }

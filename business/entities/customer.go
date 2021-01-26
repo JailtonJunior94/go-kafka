@@ -1,11 +1,11 @@
-package models
+package entities
 
 import (
 	"database/sql"
 	"time"
 )
 
-type User struct {
+type Customer struct {
 	ID        int64        `db:"Id"`
 	Name      string       `db:"Name"`
 	Email     string       `db:"Email"`
