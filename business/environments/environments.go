@@ -21,7 +21,7 @@ var (
 func NewConfig() {
 	var err error
 
-	if err = godotenv.Load(); err != nil {
+	if err = godotenv.Load("../../.env"); err != nil {
 		log.Fatal(err)
 	}
 
