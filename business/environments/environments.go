@@ -15,6 +15,7 @@ var (
 	GroupId          = ""
 	Topic            = ""
 	Port             = 0
+	SlackBaseUrl     = ""
 )
 
 func NewConfig() {
@@ -33,4 +34,5 @@ func NewConfig() {
 	if err != nil {
 		Port = 9000
 	}
+	SlackBaseUrl = os.Getenv("SLACK_BASEURL")
 }

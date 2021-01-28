@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github/jailtonjunior94/go-kafka/business/environments"
 	"github/jailtonjunior94/go-kafka/business/messages"
+	"github/jailtonjunior94/go-kafka/business/services"
 
 	log "github.com/sirupsen/logrus"
 
@@ -29,6 +30,11 @@ func main() {
 		log.Error(fmt.Sprintf("[SUBSCRIBE]: %v", err))
 	}
 
+	slack := services.NewSlackService()
+	notification := services.NewNotificationService(slack)
+
+	fmt.Println("🚀 Consumer is running")
+
 	for {
 		message, err := consume.ReadMessage(-1)
 		if err != nil {
@@ -41,16 +47,8 @@ func main() {
 				log.Error(fmt.Sprintf("[JSON UNMARSHAL]: %v", err))
 			}
 
-			if kafkaMessage.Payload.After != nil && kafkaMessage.Payload.Before == nil {
-				log.Info(fmt.Sprintf("[INSERT]: %v", *kafkaMessage.Payload.After))
-			}
-
-			if kafkaMessage.Payload.After != nil && kafkaMessage.Payload.Before != nil {
-				log.Info(fmt.Sprintf("[UPDATE]: %v", *kafkaMessage.Payload.After))
-			}
-
-			if kafkaMessage.Payload.After == nil && kafkaMessage.Payload.Before != nil {
-				log.Info(fmt.Sprintf("[DELETE]: %v", *kafkaMessage.Payload.Before))
+			if err = notification.SendNotification(&kafkaMessage); err != nil {
+				log.Error(fmt.Sprintf("[SEND NOTIFICATION]: %v", err))
 			}
 
 			tp, err := consume.CommitMessage(message)
