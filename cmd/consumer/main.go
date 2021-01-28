@@ -22,40 +22,42 @@ func main() {
 	})
 
 	if err != nil {
-		log.Error(err)
+		log.Error(fmt.Sprintf("[NEW CONSUMER]: %v", err))
 	}
 
 	if err = consume.Subscribe(environments.Topic, nil); err != nil {
-		log.Error(err)
+		log.Error(fmt.Sprintf("[SUBSCRIBE]: %v", err))
 	}
 
 	for {
 		message, err := consume.ReadMessage(-1)
 		if err != nil {
-			log.Error(err)
+			log.Error(fmt.Sprintf("[READ MESSAGE]: %v", err))
 		}
 
 		if message.Value != nil {
 			var kafkaMessage messages.KafkaMessage
 			if err := json.Unmarshal(message.Value, &kafkaMessage); err != nil {
-				log.Error(err)
+				log.Error(fmt.Sprintf("[JSON UNMARSHAL]: %v", err))
 			}
 
 			if kafkaMessage.Payload.After != nil && kafkaMessage.Payload.Before == nil {
-				log.Info(fmt.Sprintf("[INSERT] - %v\n", &kafkaMessage.Payload))
-			} else {
-				log.Info(fmt.Sprintf("[UPDATE] - %v\n", &kafkaMessage.Payload))
+				log.Info(fmt.Sprintf("[INSERT]: %v", *kafkaMessage.Payload.After))
 			}
 
-			_, err = consume.CommitMessage(message)
+			if kafkaMessage.Payload.After != nil && kafkaMessage.Payload.Before != nil {
+				log.Info(fmt.Sprintf("[UPDATE]: %v", *kafkaMessage.Payload.After))
+			}
+
+			if kafkaMessage.Payload.After == nil && kafkaMessage.Payload.Before != nil {
+				log.Info(fmt.Sprintf("[DELETE]: %v", *kafkaMessage.Payload.Before))
+			}
+
+			tp, err := consume.CommitMessage(message)
 			if err != nil {
-				fmt.Printf("Erro ao comitar mensagem: %s", err)
+				log.Error(fmt.Sprintf("[COMMIT MESSAGE]: %v", err))
 			}
-		}
-
-		_, err = consume.CommitMessage(message)
-		if err != nil {
-			fmt.Printf("Erro ao comitar mensagem: %s", err)
+			log.Info(fmt.Sprintf("[TOPIC PARTITION]: %v", tp))
 		}
 	}
 }
