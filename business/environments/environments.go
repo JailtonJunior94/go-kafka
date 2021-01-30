@@ -2,37 +2,37 @@ package environments
 
 import (
 	"log"
-	"os"
-	"strconv"
 
-	"github.com/joho/godotenv"
+	"github.com/spf13/viper"
 )
 
 var (
 	Environment      = ""
+	Port             = 0
 	ConnectionString = ""
 	BootstrapServer  = ""
 	GroupId          = ""
 	Topic            = ""
-	Port             = 0
 	SlackBaseUrl     = ""
 )
 
 func NewConfig() {
 	var err error
 
-	if err = godotenv.Load("../../.env"); err != nil {
+	viper.SetConfigName("config")
+	viper.SetConfigType("yaml")
+	viper.AddConfigPath(".")
+
+	err = viper.ReadInConfig()
+	if err != nil {
 		log.Fatal(err)
 	}
 
-	Environment = os.Getenv("ENVIRONMENT")
-	ConnectionString = os.Getenv("CONNECTION_STRING")
-	BootstrapServer = os.Getenv("BOOTSTRAP_SERVER")
-	GroupId = os.Getenv("GROUP_ID")
-	Topic = os.Getenv("TOPIC")
-	Port, err = strconv.Atoi(os.Getenv("API_PORT"))
-	if err != nil {
-		Port = 9000
-	}
-	SlackBaseUrl = os.Getenv("SLACK_BASEURL")
+	Environment = viper.GetString("environment")
+	Port = viper.GetInt("api.port")
+	ConnectionString = viper.GetString("api.connectionString")
+	BootstrapServer = viper.GetString("consumer.bootstrapServer")
+	GroupId = viper.GetString("consumer.groupId")
+	Topic = viper.GetString("consumer.topic")
+	SlackBaseUrl = viper.GetString("consumer.slackBaseUrl")
 }

@@ -1,0 +1,10 @@
+environment: "Development"
+
+api:
+  port: 3000
+  connectionString: "sqlserver://sa:@stefany@1994@192.168.0.50:1433?database=KafkaPoC"
+
+consumer:
+  bootstrapServer: "bootstrapServer"
+  groupId: "groupId"
+  slackBaseUrl: "slackBaseUrl"
