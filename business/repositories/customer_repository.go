@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"database/sql"
+
 	"github/jailtonjunior94/go-kafka/business/entities"
 
 	"github.com/jmoiron/sqlx"

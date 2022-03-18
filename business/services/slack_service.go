@@ -4,9 +4,10 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"net/http"
+
 	"github/jailtonjunior94/go-kafka/business/dtos"
 	"github/jailtonjunior94/go-kafka/business/environments"
-	"net/http"
 )
 
 type ISlackService interface {

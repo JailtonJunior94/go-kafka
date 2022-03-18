@@ -3,13 +3,13 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+
 	"github/jailtonjunior94/go-kafka/business/environments"
 	"github/jailtonjunior94/go-kafka/business/messages"
 	"github/jailtonjunior94/go-kafka/business/services"
 
-	log "github.com/sirupsen/logrus"
-
 	"github.com/confluentinc/confluent-kafka-go/kafka"
+	log "github.com/sirupsen/logrus"
 )
 
 func main() {

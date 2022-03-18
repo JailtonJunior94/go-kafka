@@ -1,10 +1,11 @@
 package routes
 
 import (
+	"log"
+
 	"github/jailtonjunior94/go-kafka/business/database"
 	"github/jailtonjunior94/go-kafka/business/handlers"
 	"github/jailtonjunior94/go-kafka/business/repositories"
-	"log"
 
 	"github.com/gofiber/fiber/v2"
 )

@@ -1,10 +1,11 @@
 package handlers
 
 import (
+	"strconv"
+
 	"github/jailtonjunior94/go-kafka/business/dtos"
 	"github/jailtonjunior94/go-kafka/business/mappings"
 	"github/jailtonjunior94/go-kafka/business/repositories"
-	"strconv"
 
 	"github.com/gofiber/fiber/v2"
 )

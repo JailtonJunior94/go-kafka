@@ -2,6 +2,7 @@ package services
 
 import (
 	"fmt"
+
 	"github/jailtonjunior94/go-kafka/business/dtos"
 	"github/jailtonjunior94/go-kafka/business/messages"
 

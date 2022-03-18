@@ -1,37 +1,65 @@
-version: "3.4"
+version: "3"
 
 services:
+  mssql:
+    container_name: mssql
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    restart: always
+    ports:
+      - "1433:1433"
+    networks:
+      - kafka_net
+    volumes:
+      - ./.docker/data:/var/opt/mssql/data
+    environment:
+      ACCEPT_EULA: 'Y'
+      SA_PASSWORD: '@docker@2021'
+      MSSQL_AGENT_ENABLED: 'True'
+
   zookeeper:
+    container_name: zookeeper
     image: confluentinc/cp-zookeeper
     ports:
       - "2181:2181"
+    networks:
+      - kafka_net
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
 
   kafka:
+    container_name: kafka
     image: confluentinc/cp-kafka
     depends_on:
       - zookeeper
     ports:
       - "9092:9092"
+    networks:
+      - kafka_net
     environment:
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://192.168.0.109:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_LOG_CLEANER_DELETE_RETENTION_MS: 5000
       KAFKA_BROKER_ID: 1
       KAFKA_MIN_INSYNC_REPLICAS: 1
 
-  connector:
-    image: debezium/connect:1.2
+  debezium_connect:
+    container_name: debezium_connect
+    image: debezium/connect:1.8
     ports:
       - "8083:8083"
+    networks:
+      - kafka_net
     environment:
       GROUP_ID: 1
       CONFIG_STORAGE_TOPIC: my_connect_configs
       OFFSET_STORAGE_TOPIC: my_connect_offsets
       STATUS_STORAGE_TOPIC: my_connect_statuses
-      BOOTSTRAP_SERVERS: 192.168.0.109:9092
+      BOOTSTRAP_SERVERS: kafka:9092
     depends_on:
       - zookeeper
       - kafka
+
+networks:
+  kafka_net:
+    driver: bridge
