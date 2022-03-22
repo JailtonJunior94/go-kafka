@@ -22,22 +22,22 @@ func NewNotificationService(slackService ISlackService) INotificationService {
 }
 
 func (n NotificationService) SendNotification(m *messages.KafkaMessage) error {
-	if m.Payload.After != nil && m.Payload.Before == nil {
-		log.Info(fmt.Sprintf("[INSERT]: %v", *m.Payload.After))
+	if m.After != nil && m.Before == nil {
+		log.Info(fmt.Sprintf("[INSERT]: %v", *m.After))
 
 		text := fmt.Sprintf(`[INSERT] - Cliente: 
 				ID: %v
 				Nome: %s
 				E-mail: %s
-		`, m.Payload.After.Id, m.Payload.After.Name, m.Payload.After.Email)
+		`, m.After.Id, m.After.Name, m.After.Email)
 
 		if err := n.SlackService.SendMessage(&dtos.SlackRequest{Text: text}); err != nil {
 			log.Error(fmt.Sprintf("[SLACK]: %v", err))
 		}
 	}
 
-	if m.Payload.After != nil && m.Payload.Before != nil {
-		log.Info(fmt.Sprintf("[UPDATE]: %v", *m.Payload.After))
+	if m.After != nil && m.Before != nil {
+		log.Info(fmt.Sprintf("[UPDATE]: %v", *m.After))
 
 		text := fmt.Sprintf(`[UPDATE] - Cliente: 
 		      [BEFORE]
@@ -48,22 +48,22 @@ func (n NotificationService) SendNotification(m *messages.KafkaMessage) error {
 				ID: %v
 				Nome: %s
 				E-mail: %s
-		`, m.Payload.Before.Id, m.Payload.Before.Name, m.Payload.Before.Email,
-			m.Payload.After.Id, m.Payload.After.Name, m.Payload.After.Email)
+		`, m.Before.Id, m.Before.Name, m.Before.Email,
+			m.After.Id, m.After.Name, m.After.Email)
 
 		if err := n.SlackService.SendMessage(&dtos.SlackRequest{Text: text}); err != nil {
 			log.Error(fmt.Sprintf("[SLACK]: %v", err))
 		}
 	}
 
-	if m.Payload.After == nil && m.Payload.Before != nil {
-		log.Info(fmt.Sprintf("[DELETE]: %v", *m.Payload.Before))
+	if m.After == nil && m.Before != nil {
+		log.Info(fmt.Sprintf("[DELETE]: %v", *m.Before))
 
 		text := fmt.Sprintf(`[DELETE] - Cliente: 
 				ID: %v
 				Nome: %s
 				E-mail: %s
-		`, m.Payload.Before.Id, m.Payload.Before.Name, m.Payload.Before.Email)
+		`, m.Before.Id, m.Before.Name, m.Before.Email)
 
 		if err := n.SlackService.SendMessage(&dtos.SlackRequest{Text: text}); err != nil {
 			log.Error(fmt.Sprintf("[SLACK]: %v", err))

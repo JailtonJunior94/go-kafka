@@ -20,8 +20,8 @@ CREATE TABLE dbo.Customers
 EXEC sys.sp_cdc_enable_table
 @source_schema = N'dbo',
 @source_name   = N'Customers',
-@role_name     = N'Admin',
-@supports_net_changes = 1
+@role_name     = NULL,
+@supports_net_changes = 0
 GO
 
 EXEC sys.sp_cdc_help_change_data_capture 

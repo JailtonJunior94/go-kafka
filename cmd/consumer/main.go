@@ -33,29 +33,32 @@ func main() {
 	slack := services.NewSlackService()
 	notification := services.NewNotificationService(slack)
 
-	fmt.Println("🚀 Consumer is running")
-
+	log.Println("🚀 Consumer is running")
 	for {
 		message, err := consume.ReadMessage(-1)
 		if err != nil {
-			log.Error(fmt.Sprintf("[READ MESSAGE]: %v", err))
+			log.Error(fmt.Sprintf("[READ MESSAGE] [%v]", err))
+			continue
 		}
 
 		if message.Value != nil {
 			var kafkaMessage messages.KafkaMessage
 			if err := json.Unmarshal(message.Value, &kafkaMessage); err != nil {
-				log.Error(fmt.Sprintf("[JSON UNMARSHAL]: %v", err))
+				log.Error(fmt.Sprintf("[JSON UNMARSHAL] [%v]", err))
+				continue
 			}
 
 			if err = notification.SendNotification(&kafkaMessage); err != nil {
-				log.Error(fmt.Sprintf("[SEND NOTIFICATION]: %v", err))
+				log.Error(fmt.Sprintf("[SEND NOTIFICATION] [%v]", err))
+				continue
 			}
 
 			tp, err := consume.CommitMessage(message)
 			if err != nil {
-				log.Error(fmt.Sprintf("[COMMIT MESSAGE]: %v", err))
+				log.Error(fmt.Sprintf("[COMMIT MESSAGE] [%v]", err))
+				continue
 			}
-			log.Info(fmt.Sprintf("[TOPIC PARTITION]: %v", tp))
+			log.Info(fmt.Sprintf("[TOPIC PARTITION] [%v]", tp))
 		}
 	}
 }
