@@ -1,11 +1,20 @@
 package messages
 
 type KafkaMessage struct {
-	Before   *CustomerMessage `json:"before"`
-	After    *CustomerMessage `json:"after"`
-	Op       string           `json:"op"`
-	TsMs     int64            `json:"ts_ms"`
-	Customer interface{}      `json:"customer"`
+	SchemaPrimary *SchemaPrimary `json:"schemaPrimary"`
+	Payload       *Payload       `json:"payload"`
+}
+
+type SchemaPrimary struct {
+	Type string `json:"type"`
+
+	Optional bool `json:"optional"`
+	Name     bool `json:"name"`
+}
+
+type Payload struct {
+	Before *CustomerMessage `json:"before"`
+	After  *CustomerMessage `json:"after"`
 }
 
 type CustomerMessage struct {

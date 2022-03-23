@@ -2,7 +2,6 @@ package services
 
 import (
 	"fmt"
-
 	"github/jailtonjunior94/go-kafka/business/dtos"
 	"github/jailtonjunior94/go-kafka/business/messages"
 
@@ -22,22 +21,23 @@ func NewNotificationService(slackService ISlackService) INotificationService {
 }
 
 func (n NotificationService) SendNotification(m *messages.KafkaMessage) error {
-	if m.After != nil && m.Before == nil {
-		log.Info(fmt.Sprintf("[INSERT]: %v", *m.After))
+	if m.Payload.After != nil && m.Payload.Before == nil {
+		log.Info(fmt.Sprintf("[INSERT] %v", *m.Payload.After))
 
 		text := fmt.Sprintf(`[INSERT] - Cliente: 
 				ID: %v
 				Nome: %s
 				E-mail: %s
-		`, m.After.Id, m.After.Name, m.After.Email)
+		`, m.Payload.After.Id, m.Payload.After.Name, m.Payload.After.Email)
 
 		if err := n.SlackService.SendMessage(&dtos.SlackRequest{Text: text}); err != nil {
-			log.Error(fmt.Sprintf("[SLACK]: %v", err))
+			log.Error(fmt.Sprintf("[SLACK] %v", err))
+			return err
 		}
 	}
 
-	if m.After != nil && m.Before != nil {
-		log.Info(fmt.Sprintf("[UPDATE]: %v", *m.After))
+	if m.Payload.After != nil && m.Payload.Before != nil {
+		log.Info(fmt.Sprintf("[UPDATE] %v", *m.Payload.After))
 
 		text := fmt.Sprintf(`[UPDATE] - Cliente: 
 		      [BEFORE]
@@ -48,22 +48,23 @@ func (n NotificationService) SendNotification(m *messages.KafkaMessage) error {
 				ID: %v
 				Nome: %s
 				E-mail: %s
-		`, m.Before.Id, m.Before.Name, m.Before.Email,
-			m.After.Id, m.After.Name, m.After.Email)
+		`, m.Payload.Before.Id, m.Payload.Before.Name, m.Payload.Before.Email,
+			m.Payload.After.Id, m.Payload.After.Name, m.Payload.After.Email)
 
 		if err := n.SlackService.SendMessage(&dtos.SlackRequest{Text: text}); err != nil {
-			log.Error(fmt.Sprintf("[SLACK]: %v", err))
+			log.Error(fmt.Sprintf("[SLACK] %v", err))
+			return err
 		}
 	}
 
-	if m.After == nil && m.Before != nil {
-		log.Info(fmt.Sprintf("[DELETE]: %v", *m.Before))
+	if m.Payload.After == nil && m.Payload.Before != nil {
+		log.Info(fmt.Sprintf("[DELETE]: %v", *m.Payload.Before))
 
 		text := fmt.Sprintf(`[DELETE] - Cliente: 
 				ID: %v
 				Nome: %s
 				E-mail: %s
-		`, m.Before.Id, m.Before.Name, m.Before.Email)
+		`, m.Payload.Before.Id, m.Payload.Before.Name, m.Payload.Before.Email)
 
 		if err := n.SlackService.SendMessage(&dtos.SlackRequest{Text: text}); err != nil {
 			log.Error(fmt.Sprintf("[SLACK]: %v", err))

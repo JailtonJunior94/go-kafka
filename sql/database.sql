@@ -2,10 +2,7 @@ CREATE DATABASE KafkaPoC
 GO
 
 USE KafkaPoC
-GO
-
 EXEC sys.sp_cdc_enable_db
-GO
 
 CREATE TABLE dbo.Customers
 (
@@ -18,10 +15,10 @@ CREATE TABLE dbo.Customers
 );
 
 EXEC sys.sp_cdc_enable_table
-@source_schema = N'dbo',
-@source_name   = N'Customers',
-@role_name     = NULL,
-@supports_net_changes = 0
+    @source_schema = N'dbo',
+    @source_name   = N'Customers',
+    @role_name     = NULL,
+    @supports_net_changes = 0
 GO
 
 EXEC sys.sp_cdc_help_change_data_capture 
