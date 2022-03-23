@@ -1,9 +1,10 @@
 package mappings
 
 import (
+	"time"
+
 	"github/jailtonjunior94/go-kafka/business/dtos"
 	"github/jailtonjunior94/go-kafka/business/entities"
-	"time"
 )
 
 func ToResponse(c entities.Customer) dtos.CustomerResponse {

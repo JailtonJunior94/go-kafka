@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
+	"log"
+
 	"github/jailtonjunior94/go-kafka/business/environments"
 	"github/jailtonjunior94/go-kafka/business/routes"
-	"log"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"

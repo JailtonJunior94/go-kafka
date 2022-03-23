@@ -22,7 +22,7 @@ func NewNotificationService(slackService ISlackService) INotificationService {
 
 func (n NotificationService) SendNotification(m *messages.KafkaMessage) error {
 	if m.Payload.After != nil && m.Payload.Before == nil {
-		log.Info(fmt.Sprintf("[INSERT]: %v", *m.Payload.After))
+		log.Info(fmt.Sprintf("[INSERT] %v", *m.Payload.After))
 
 		text := fmt.Sprintf(`[INSERT] - Cliente: 
 				ID: %v
@@ -31,12 +31,13 @@ func (n NotificationService) SendNotification(m *messages.KafkaMessage) error {
 		`, m.Payload.After.Id, m.Payload.After.Name, m.Payload.After.Email)
 
 		if err := n.SlackService.SendMessage(&dtos.SlackRequest{Text: text}); err != nil {
-			log.Error(fmt.Sprintf("[SLACK]: %v", err))
+			log.Error(fmt.Sprintf("[SLACK] %v", err))
+			return err
 		}
 	}
 
 	if m.Payload.After != nil && m.Payload.Before != nil {
-		log.Info(fmt.Sprintf("[UPDATE]: %v", *m.Payload.After))
+		log.Info(fmt.Sprintf("[UPDATE] %v", *m.Payload.After))
 
 		text := fmt.Sprintf(`[UPDATE] - Cliente: 
 		      [BEFORE]
@@ -51,7 +52,8 @@ func (n NotificationService) SendNotification(m *messages.KafkaMessage) error {
 			m.Payload.After.Id, m.Payload.After.Name, m.Payload.After.Email)
 
 		if err := n.SlackService.SendMessage(&dtos.SlackRequest{Text: text}); err != nil {
-			log.Error(fmt.Sprintf("[SLACK]: %v", err))
+			log.Error(fmt.Sprintf("[SLACK] %v", err))
+			return err
 		}
 	}
 
