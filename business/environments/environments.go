@@ -19,7 +19,7 @@ var (
 func NewConfig() {
 	var err error
 
-	viper.SetConfigName("config")
+	viper.SetConfigName("../../config")
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath(".")
 

@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+
 	"github/jailtonjunior94/go-kafka/business/environments"
 	"github/jailtonjunior94/go-kafka/business/kafka"
 	"github/jailtonjunior94/go-kafka/business/messages"
